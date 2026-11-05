@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: atlas-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: atlas_gym
+      MYSQL_USER: atlas
+      MYSQL_PASSWORD: atlaspass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: atlas-app
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: atlas
+      DB_PASSWORD: atlaspass123
+      DB_DATABASE: atlas_gym
+      PORT: "3000"
+      SESSION_SECRET: atlas-gym-dev-secret-change-me
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/static/img/uploads:/app/client/static/img/uploads
+
+volumes:
+  mysql_data:
